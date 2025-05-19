@@ -1,0 +1,89 @@
+package com.mail.mailserver.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;  // unikalny identyfikator wiadomości
+
+    private String senderEmail;     // kto wysłał wiadomość
+    private String recipientEmail;  // kto ją otrzymał
+
+    private String subject;   // temat wiadomości
+    private String content;   // treść wiadomości
+
+    private LocalDateTime timestamp;  // czas wysłania
+
+    private boolean isRead;  // czy wiadomość została przeczytana
+
+    // ✅ Konstruktor bezargumentowy (wymagany przez JPA)
+    public Message() {}
+
+    // ✅ Konstruktor z polami (przydatny przy tworzeniu wiadomości w kodzie)
+    public Message(String senderEmail, String recipientEmail, String subject, String content, LocalDateTime timestamp) {
+        this.senderEmail = senderEmail;
+        this.recipientEmail = recipientEmail;
+        this.subject = subject;
+        this.content = content;
+        this.timestamp = timestamp;
+        this.isRead = false; // domyślnie wiadomość jest nieprzeczytana
+    }
+
+    // ✅ Gettery i Settery (Spring i JPA ich potrzebują)
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getSenderEmail() {
+        return senderEmail;
+    }
+
+    public void setSenderEmail(String senderEmail) {
+        this.senderEmail = senderEmail;
+    }
+
+    public String getRecipientEmail() {
+        return recipientEmail;
+    }
+
+    public void setRecipientEmail(String recipientEmail) {
+        this.recipientEmail = recipientEmail;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+}

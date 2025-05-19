@@ -1,0 +1,77 @@
+.mailbox-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+  width: 200px;
+  padding: 1rem;
+  background-color: #f4f4f4;
+  border-right: 1px solid #ccc;
+}
+
+.sidebar h3 {
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 8px;
+  background-color: #3498db;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar button:hover {
+  background-color: #2980b9;
+}
+
+.logout-button {
+  margin-top: 2rem;
+  background-color: #e74c3c;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+.message-list {
+  flex: 1;
+  padding: 1rem 2rem;
+  background-color: #fff;
+}
+
+.message-list h2 {
+  margin-bottom: 1rem;
+}
+
+.message-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.message-list th,
+.message-list td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.message-list th {
+  background-color: #f1f1f1;
+  font-weight: bold;
+}

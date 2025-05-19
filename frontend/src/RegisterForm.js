@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import "./Styles.css"
+
 export default function RegisterForm() {
   // Stan przechowujący dane formularza
   const [email, setEmail] = useState("");
@@ -41,6 +43,7 @@ export default function RegisterForm() {
   };
 
   return (
+  <div className="login-form">
     <form onSubmit={handleSubmit}>
       <h2>Rejestracja użytkownika</h2>
 
@@ -72,7 +75,7 @@ export default function RegisterForm() {
       <label>
         Imię:
         <input
-          type="text"
+          type="imie"
           value={imie}
           onChange={(e) => setImie(e.target.value)}
           required
@@ -84,7 +87,7 @@ export default function RegisterForm() {
       <label>
         Nazwisko:
         <input
-          type="text"
+          type="nazwisko"
           value={nazwisko}
           onChange={(e) => setNazwisko(e.target.value)}
           required
@@ -97,5 +100,6 @@ export default function RegisterForm() {
 
       <p>{message}</p>
     </form>
+    </div>
   );
 }

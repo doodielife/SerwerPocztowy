@@ -1,0 +1,33 @@
+package com.mail.mailserver.service;
+
+import com.mail.mailserver.model.Message;
+import com.mail.mailserver.repository.MessageRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class MessageService {
+
+    private final MessageRepository messageRepository;
+
+    // Wstrzykujemy repozytorium przez konstruktor
+    public MessageService(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
+
+    // Zapisz nową wiadomość
+    public Message sendMessage(Message message) {
+        // Możesz tu dodać walidacje, logikę biznesową itp.
+        return messageRepository.save(message);
+    }
+
+    // Pobierz wiadomości dla konkretnego odbiorcy (recipient)
+    public List<Message> getMessagesForRecipient(String recipientEmail) {
+        return messageRepository.findByRecipientEmail(recipientEmail);
+    }
+
+    public List<Message> getMessagesFromSender(String senderEmail) {
+        return messageRepository.findBySenderEmail(senderEmail);
+    }
+}
