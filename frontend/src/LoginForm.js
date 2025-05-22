@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Styles.css";
 
-import "./Styles.css"
-
-export default function LoginForm() {
+export default function LoginForm({ setIsLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const logged = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(logged);
-  }, []);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,36 +16,28 @@ export default function LoginForm() {
     try {
       const response = await fetch("http://localhost:8081/api/users/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       });
 
       const text = await response.text();
+
       if (response.ok && text === "Zalogowano pomyślnie!") {
-        setMessage(text);
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("email", email);
         setIsLoggedIn(true);
-      }
-      else {
+        setMessage(text);
+        navigate("/mailbox");
+      } else {
         setMessage("Błąd logowania: " + text);
       }
-}      catch(error) {
+    } catch (error) {
       setMessage("Błąd sieci: " + error.message);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
-    setMessage("");
-    setEmail("");
-    setPassword("");
-  };
-
   return (
-     <div className="login-form">
+    <div className="login-form">
       <form onSubmit={handleLogin}>
         <h2>Logowanie</h2>
 
@@ -61,11 +48,8 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            disabled={isLoggedIn} // jeśli zalogowany, blokujemy inputy
           />
         </label>
-
-        <br />
 
         <label>
           Hasło:
@@ -74,25 +58,13 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            disabled={isLoggedIn} // jeśli zalogowany, blokujemy inputy
           />
         </label>
 
-        <br />
-
-        <button type="submit" disabled={isLoggedIn}>
-          Zaloguj się
-        </button>
+        <button type="submit">Zaloguj się</button>
       </form>
 
       <p>{message}</p>
-
-      {isLoggedIn && (
-        <div>
-          <p>Jesteś zalogowany!</p>
-          <button onClick={handleLogout}>Wyloguj</button>
-        </div>
-      )}
     </div>
   );
 }

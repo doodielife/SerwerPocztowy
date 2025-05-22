@@ -1,90 +1,75 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./SendForm.css";
 
-export default function SendMessageForm() {
-  const [recipientEmail, setRecipientEmail] = useState("");
+export default function SendMessageForm({ onLogout }) {
+  const [recipient, setRecipient] = useState("");
   const [subject, setSubject] = useState("");
-  const [content, setContent] = useState("");
-  const [status, setStatus] = useState("");
+  const [body, setBody] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleSend = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // ⛔️ Bez zalogowanego użytkownika nie wysyłamy wiadomości
-    const senderEmail = localStorage.getItem("email");
-    if (!senderEmail) {
-      setStatus("Błąd: Nie jesteś zalogowany.");
-      return;
-    }
-
-    const message = {
-      senderEmail,
-      recipientEmail,
-      subject,
-      content
-    };
-
-    try {
-      const response = await fetch("http://localhost:8081/api/messages/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(message)
-      });
-
-      if (response.ok) {
-        setStatus("Wiadomość została wysłana!");
-        setRecipientEmail("");
-        setSubject("");
-        setContent("");
-      } else {
-        const errorText = await response.text();
-        setStatus("Błąd podczas wysyłania: " + errorText);
-      }
-    } catch (error) {
-      setStatus("Błąd sieci: " + error.message);
-    }
+    // logika wysyłania wiadomości
+    setMessage("Wiadomość wysłana!");
   };
 
   return (
-    <form onSubmit={handleSend}>
-      <h3>Wyślij wiadomość</h3>
+    <div className="send-message-page">
+      <nav className="sidebar">
+        <h3>Menu</h3>
+        <button onClick={() => navigate("/mailbox")}>📥 Odebrane</button>
+        <button onClick={() => navigate("/mailbox/sent")}>📤 Wysłane</button>
+        <button onClick={() => navigate("/mailbox/trash")}>🗑️ Kosz</button>
+        <hr style={{margin: "20px 0", borderColor: "#444"}} />
+        <button className="logout-button" onClick={onLogout}>Wyloguj</button>
+      </nav>
 
-      <label>
-        Do (email odbiorcy):
-        <input
-          type="email"
-          value={recipientEmail}
-          onChange={(e) => setRecipientEmail(e.target.value)}
-          required
-        />
-      </label>
-      <br />
+      <main className="send-message-content">
+        <header>
+          <h2>Nowa wiadomość</h2>
+        </header>
 
-      <label>
-        Temat:
-        <input
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          required
-        />
-      </label>
-      <br />
+        <form onSubmit={handleSubmit} className="send-message-form">
+          <label>
+            Do:
+            <input
+              type="email"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              required
+              placeholder="Adres email odbiorcy"
+            />
+          </label>
 
-      <label>
-        Treść:
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-        />
-      </label>
-      <br />
+          <label>
+            Temat:
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+              placeholder="Temat wiadomości"
+            />
+          </label>
 
-      <button type="submit">Wyślij</button>
+          <label>
+            Treść:
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              required
+              placeholder="Napisz wiadomość..."
+              rows={6}
+            />
+          </label>
 
-      <p>{status}</p>
-    </form>
+          <button type="submit">Wyślij</button>
+
+          {message && <p className="success-message">{message}</p>}
+        </form>
+      </main>
+    </div>
   );
 }

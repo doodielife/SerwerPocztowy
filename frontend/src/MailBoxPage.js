@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";  // <-- dodaj import
 import "./MailBoxPage.css";
 
 export default function MailboxPage({ onLogout }) {
@@ -6,6 +7,7 @@ export default function MailboxPage({ onLogout }) {
   const [activeFolder, setActiveFolder] = useState("inbox");
 
   const userEmail = localStorage.getItem("email");
+  const navigate = useNavigate();  // <-- inicjalizujemy hook nawigacji
 
   useEffect(() => {
     if (activeFolder === "inbox" && userEmail) {
@@ -15,6 +17,11 @@ export default function MailboxPage({ onLogout }) {
         .catch(err => console.error("Błąd przy pobieraniu wiadomości:", err));
     }
   }, [activeFolder, userEmail]);
+
+  // Nowa funkcja do obsługi przycisku "Napisz"
+  const handleComposeClick = () => {
+    navigate("/sendmessage"); // zmień ścieżkę na tę, pod którą masz SendMessageForm
+  };
 
   return (
     <div className="mailbox-container">
@@ -31,6 +38,8 @@ export default function MailboxPage({ onLogout }) {
             <button onClick={() => setActiveFolder("trash")}>🗑️ Kosz</button>
           </li>
         </ul>
+
+        <button className="create-button" onClick={handleComposeClick}>Napisz</button>
         <button className="logout-button" onClick={onLogout}>Wyloguj</button>
       </div>
 

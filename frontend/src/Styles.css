@@ -22,7 +22,9 @@
 }
 
 .login-form input[type="email"],
-.login-form input[type="password"] {
+.login-form input[type="password"],
+.login-form input[type="imie"],
+.login-form input[type="nazwisko"]{
   width: 100%;
   padding: 10px 12px;
   margin-top: 4px;

@@ -1,47 +1,54 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
-import MailBoxPage from "./MailBoxPage"; // Dodaj import
+import MailBoxPage from "./MailBoxPage";
+import SendMessageForm from "./SendMessageForm";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Sprawdź localStorage przy ładowaniu
   useEffect(() => {
-    const loginStatus = localStorage.getItem("isLoggedIn");
-    if (loginStatus === "true") {
-      setIsLoggedIn(true);
-    }
+    const logged = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(logged);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("email");
     setIsLoggedIn(false);
   };
 
-//  return (
-//    <div>
-//      {isLoggedIn && (
-//        <>
-//          <h2>Witaj, jesteś zalogowany!</h2>
-//          <button onClick={handleLogout}>Wyloguj</button>
-//        </>
-//      )}
-//      <LoginForm isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-//      <RegisterForm isLoggedIn={isLoggedIn} />
-//    </div>
-//  );
-
-return (
-  <div>
-    {isLoggedIn ? (
-      <MailBoxPage onLogout={handleLogout} />
-    ) : (
-      <>
-        <LoginForm isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-        <RegisterForm isLoggedIn={isLoggedIn} />
-      </>
-    )}
-  </div>
-);
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          !isLoggedIn ? (
+            <>
+              <LoginForm setIsLoggedIn={setIsLoggedIn} />
+              <RegisterForm />
+            </>
+          ) : (
+            <Navigate to="/mailbox" replace />
+          )
+        }
+      />
+      <Route
+        path="/mailbox"
+        element={
+          isLoggedIn ? (
+            <MailBoxPage onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+      <Route
+        path="/sendmessage"
+        element={<SendMessageForm onLogout={handleLogout} />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
