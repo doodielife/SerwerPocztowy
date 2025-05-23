@@ -30,4 +30,24 @@ public class MessageService {
     public List<Message> getMessagesFromSender(String senderEmail) {
         return messageRepository.findBySenderEmail(senderEmail);
     }
+
+    public Message getMessageById(Long id) {
+        return messageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Wiadomość nie znaleziona"));
+    }
+
+//    public boolean moveToTrash(Long messageId) {
+//        int updated = messageRepository.updateFolderById(messageId, "trash");
+//        return updated > 0;  // zwróci true jeśli coś zmieniono
+//}
+
+
+
+//    public void moveMessageToTrash(Long id) {
+//        Message msg = messageRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Nie znaleziono wiadomości"));
+//        msg.setFolder("trash");
+//        messageRepository.save(msg);
+//    }
+
 }

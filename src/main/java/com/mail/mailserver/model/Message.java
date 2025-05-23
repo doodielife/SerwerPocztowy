@@ -16,6 +16,9 @@ public class Message {
     private String subject;   // temat wiadomości
     private String content;   // treść wiadomości
 
+//    @Column(nullable = false)
+//    private String folder = "inbox";
+
     private LocalDateTime timestamp;  // czas wysłania
 
     private boolean isRead;  // czy wiadomość została przeczytana
@@ -24,12 +27,12 @@ public class Message {
     public Message() {}
 
     // ✅ Konstruktor z polami (przydatny przy tworzeniu wiadomości w kodzie)
-    public Message(String senderEmail, String recipientEmail, String subject, String content, LocalDateTime timestamp) {
+    public Message(String senderEmail, String recipientEmail, String subject, String content) {
         this.senderEmail = senderEmail;
         this.recipientEmail = recipientEmail;
         this.subject = subject;
         this.content = content;
-        this.timestamp = timestamp;
+        this.timestamp = LocalDateTime.now();
         this.isRead = false; // domyślnie wiadomość jest nieprzeczytana
     }
 
@@ -86,4 +89,13 @@ public class Message {
     public void setRead(boolean read) {
         isRead = read;
     }
+
+//    public String getFolder() {
+//        return folder;
+//    }
+//
+//    public void setFolder(String folder) {
+//        this.folder = folder;
+//    }
+
 }

@@ -12,7 +12,36 @@ export default function SendMessageForm({ onLogout }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // logika wysyłania wiadomości
-    setMessage("Wiadomość wysłana!");
+    const senderEmail = localStorage.getItem("email");
+
+    try {
+      const response = await fetch("http://localhost:8081/api/messages/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          senderEmail,
+          recipientEmail: recipient,
+          subject,
+          content: body,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Nie udało się wysłać wiadomości");
+      }
+
+      const result = await response.json();
+      setMessage("✅ Wiadomość została wysłana!");
+      setRecipient("");
+      setSubject("");
+      setBody("");
+    } catch (error) {
+      console.error("Błąd wysyłania:", error);
+      setMessage("❌ Wystąpił błąd podczas wysyłania.");
+    }
+
   };
 
   return (

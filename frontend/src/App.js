@@ -4,6 +4,8 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import MailBoxPage from "./MailBoxPage";
 import SendMessageForm from "./SendMessageForm";
+import ReadMessagePage from "./ReadMessagePage";
+
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,10 +47,10 @@ export default function App() {
         }
       />
       <Route
-        path="/sendmessage"
-        element={<SendMessageForm onLogout={handleLogout} />}
-      />
+        path="/sendmessage" element={<SendMessageForm onLogout={handleLogout} />} />
+      <Route path="/mailbox/message/:id" element={<ReadMessagePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
+
     </Routes>
   );
 }

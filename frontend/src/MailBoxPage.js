@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";  // <-- dodaj import
+import { useNavigate } from "react-router-dom";
 import "./MailBoxPage.css";
 
 export default function MailboxPage({ onLogout }) {
@@ -7,20 +7,26 @@ export default function MailboxPage({ onLogout }) {
   const [activeFolder, setActiveFolder] = useState("inbox");
 
   const userEmail = localStorage.getItem("email");
-  const navigate = useNavigate();  // <-- inicjalizujemy hook nawigacji
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (activeFolder === "inbox" && userEmail) {
-      fetch(`http://localhost:8081/api/messages/inbox?recipientEmail=${userEmail}`)
+    let endpoint = "";
+    if (activeFolder === "inbox") {
+      endpoint = `http://localhost:8081/api/messages/inbox?recipientEmail=${userEmail}`;
+    } else if (activeFolder === "sent") {
+      endpoint = `http://localhost:8081/api/messages/sent?senderEmail=${userEmail}`;
+    }
+
+    if (endpoint) {
+      fetch(endpoint)
         .then(res => res.json())
         .then(data => setMessages(data))
         .catch(err => console.error("Błąd przy pobieraniu wiadomości:", err));
     }
   }, [activeFolder, userEmail]);
 
-  // Nowa funkcja do obsługi przycisku "Napisz"
   const handleComposeClick = () => {
-    navigate("/sendmessage"); // zmień ścieżkę na tę, pod którą masz SendMessageForm
+    navigate("/sendmessage");
   };
 
   return (
@@ -44,11 +50,11 @@ export default function MailboxPage({ onLogout }) {
       </div>
 
       <div className="message-list">
-        <h2>{activeFolder === "inbox" ? "Odebrane wiadomości" : "Folder: " + activeFolder}</h2>
+        <h2>{activeFolder === "inbox" ? "Odebrane wiadomości" : "Wysłane wiadomości"}</h2>
         <table>
           <thead>
             <tr>
-              <th>Od</th>
+              <th>{activeFolder === "inbox" ? "Od" : "Do"}</th>
               <th>Temat</th>
               <th>Data</th>
             </tr>
@@ -60,8 +66,12 @@ export default function MailboxPage({ onLogout }) {
               </tr>
             ) : (
               messages.map((msg) => (
-                <tr key={msg.id}>
-                  <td>{msg.senderEmail}</td>
+                <tr
+                  key={msg.id}
+                  onClick={() => navigate(`/mailbox/message/${msg.id}`)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{activeFolder === "inbox" ? msg.senderEmail : msg.recipientEmail}</td>
                   <td>{msg.subject}</td>
                   <td>{new Date(msg.timestamp).toLocaleString()}</td>
                 </tr>

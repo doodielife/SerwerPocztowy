@@ -4,6 +4,8 @@ import com.mail.mailserver.model.Message;
 import com.mail.mailserver.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
 
 import java.util.List;
 
@@ -32,4 +34,27 @@ public class MessageController {
     public List<Message> getMessagesFromSender(@RequestParam String senderEmail) {
         return messageService.getMessagesFromSender(senderEmail);
     }
+
+    @GetMapping("/{id}")
+    public Message getMessageById(@PathVariable Long id) {
+        return messageService.getMessageById(id);
+    }
+
+//    // Endpoint do przeniesienia wiadomości do kosza
+//    @PutMapping("/{id}/move-to-trash")
+//    public ResponseEntity<?> moveMessageToTrash(@PathVariable Long id) {
+//        boolean updated = messageService.moveToTrash(id);
+//        if (updated) {
+//            return ResponseEntity.ok().build();
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+
+//    @PutMapping("/api/messages/{id}/trash")
+//    public ResponseEntity<Void> moveToTrash(@PathVariable Long id) {
+//        messageService.moveMessageToTrash(id);
+//        return ResponseEntity.ok().build();
+//    }
+
 }
