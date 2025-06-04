@@ -32,12 +32,25 @@ export default function App() {
               <RegisterForm />
             </>
           ) : (
-            <Navigate to="/mailbox" replace />
+            <Navigate to="/mailbox/inbox" replace />
           )
         }
       />
+
+
       <Route
-        path="/mailbox"
+        path="/mailbox/inbox"
+        element={
+          isLoggedIn ? (
+            <MailBoxPage onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/mailbox/sent"
         element={
           isLoggedIn ? (
             <MailBoxPage onLogout={handleLogout} />
@@ -47,8 +60,67 @@ export default function App() {
         }
       />
       <Route
-        path="/sendmessage" element={<SendMessageForm onLogout={handleLogout} />} />
-      <Route path="/mailbox/message/:id" element={<ReadMessagePage />} />
+        path="/mailbox/trash"
+        element={
+          isLoggedIn ? (
+            <MailBoxPage onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+
+
+
+
+      <Route
+        path="/sendmessage"
+        element={
+          isLoggedIn ? (
+            <SendMessageForm onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+        )
+        }
+      />
+
+
+
+
+      <Route
+        path="/mailbox/message/inbox/:id"
+        element={
+          isLoggedIn ? (
+            <ReadMessagePage onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/mailbox/message/sent/:id"
+        element={
+          isLoggedIn ? (
+            <ReadMessagePage onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/mailbox/message/trash/:id"
+        element={
+          isLoggedIn ? (
+            <ReadMessagePage onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+
+
       <Route path="*" element={<Navigate to="/" replace />} />
 
     </Routes>

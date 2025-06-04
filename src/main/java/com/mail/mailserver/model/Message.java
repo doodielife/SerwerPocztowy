@@ -16,8 +16,11 @@ public class Message {
     private String subject;   // temat wiadomości
     private String content;   // treść wiadomości
 
-//    @Column(nullable = false)
-//    private String folder = "inbox";
+    private boolean senderDeleted = false;
+    private boolean recipientDeleted = false;
+
+    private String folder = "inbox";
+
 
     private LocalDateTime timestamp;  // czas wysłania
 
@@ -90,12 +93,29 @@ public class Message {
         isRead = read;
     }
 
-//    public String getFolder() {
-//        return folder;
-//    }
-//
-//    public void setFolder(String folder) {
-//        this.folder = folder;
-//    }
+    public boolean isSenderDeleted() {
+        return senderDeleted;
+    }
+
+    public void setSenderDeleted(boolean senderDeleted) {
+        this.senderDeleted = senderDeleted;
+    }
+
+    public boolean isRecipientDeleted() {
+        return recipientDeleted;
+    }
+
+    public void setRecipientDeleted(boolean recipientDeleted) {
+        this.recipientDeleted = recipientDeleted;
+    }
+
+    public String getFolder(){
+        return this.folder;
+    }
+
+    public void setFolder(String folder){
+        this.folder = folder;
+    }
+
 
 }

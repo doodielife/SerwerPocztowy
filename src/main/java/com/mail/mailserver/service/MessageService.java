@@ -24,11 +24,15 @@ public class MessageService {
 
     // Pobierz wiadomości dla konkretnego odbiorcy (recipient)
     public List<Message> getMessagesForRecipient(String recipientEmail) {
-        return messageRepository.findByRecipientEmail(recipientEmail);
+        return messageRepository.findByRecipientEmailAndFolderAndRecipientDeletedFalse(recipientEmail, "inbox");
     }
 
     public List<Message> getMessagesFromSender(String senderEmail) {
-        return messageRepository.findBySenderEmail(senderEmail);
+        return messageRepository.findBySenderEmailAndSenderDeletedFalse(senderEmail);
+    }
+
+    public List<Message> getMessagesFromTrash(String recipientEmail){
+        return messageRepository.findByRecipientEmailAndFolderAndRecipientDeletedFalse(recipientEmail, "trash");
     }
 
     public Message getMessageById(Long id) {
@@ -36,18 +40,35 @@ public class MessageService {
                 .orElseThrow(() -> new RuntimeException("Wiadomość nie znaleziona"));
     }
 
-//    public boolean moveToTrash(Long messageId) {
-//        int updated = messageRepository.updateFolderById(messageId, "trash");
-//        return updated > 0;  // zwróci true jeśli coś zmieniono
-//}
+    public void markMessageAsDeleted(Long messageId, String userType) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Wiadomość nie znaleziona"));
 
+        if ("sender".equalsIgnoreCase(userType)) {
+            message.setSenderDeleted(true);
+        } else if ("recipient".equalsIgnoreCase(userType)) {
+            message.setRecipientDeleted(true);
+        } else {
+            throw new IllegalArgumentException("Niepoprawny typ użytkownika: " + userType);
+        }
 
+        if (message.isSenderDeleted() && message.isRecipientDeleted()) {
+            messageRepository.delete(message);  // usuwamy całkowicie, bo obie strony usunęły
+        } else {
+            messageRepository.save(message);    // tylko aktualizujemy flagi
+        }
+    }
 
-//    public void moveMessageToTrash(Long id) {
-//        Message msg = messageRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Nie znaleziono wiadomości"));
-//        msg.setFolder("trash");
-//        messageRepository.save(msg);
-//    }
+    public void changeDirtoTrash(Long messageId){
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Wiadomość nie znaleziona"));
+        if ("inbox".equals(message.getFolder())) {
+            message.setFolder("trash");
+        } else {
+            message.setFolder("inbox");
+        }
+        messageRepository.save(message);
+    }
+
 
 }

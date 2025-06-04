@@ -48,7 +48,7 @@ export default function SendMessageForm({ onLogout }) {
     <div className="send-message-page">
       <nav className="sidebar">
         <h3>Menu</h3>
-        <button onClick={() => navigate("/mailbox")}>📥 Odebrane</button>
+        <button onClick={() => navigate("/mailbox/inbox")}>📥 Odebrane</button>
         <button onClick={() => navigate("/mailbox/sent")}>📤 Wysłane</button>
         <button onClick={() => navigate("/mailbox/trash")}>🗑️ Kosz</button>
         <hr style={{margin: "20px 0", borderColor: "#444"}} />

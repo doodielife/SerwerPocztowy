@@ -13,13 +13,9 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     // Wszystkie wiadomości otrzymane przez użytkownika
-    List<Message> findByRecipientEmail(String recipientEmail);
+    List<Message> findByRecipientEmailAndFolderAndRecipientDeletedFalse(String recipientEmail, String folder);
 
     // Wszystkie wiadomości wysłane przez użytkownika
-    List<Message> findBySenderEmail(String senderEmail);
+    List<Message> findBySenderEmailAndSenderDeletedFalse(String senderEmail);
 
-//    @Modifying
-//    @Transactional
-//    @Query("UPDATE Message m SET m.folder = :folder WHERE m.id = :id")
-//    int updateFolderById(Long id, String folder);
 }

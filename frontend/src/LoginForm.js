@@ -27,7 +27,7 @@ export default function LoginForm({ setIsLoggedIn }) {
         localStorage.setItem("email", email);
         setIsLoggedIn(true);
         setMessage(text);
-        navigate("/mailbox");
+        navigate("/mailbox/inbox");
       } else {
         setMessage("Błąd logowania: " + text);
       }

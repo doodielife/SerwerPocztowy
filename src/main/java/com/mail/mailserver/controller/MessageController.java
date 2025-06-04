@@ -35,26 +35,49 @@ public class MessageController {
         return messageService.getMessagesFromSender(senderEmail);
     }
 
+    @GetMapping("/trash")
+    public List<Message> getMessagesFromTrash(@RequestParam String recipientEmail){
+        return messageService.getMessagesFromTrash(recipientEmail);
+    }
+
     @GetMapping("/{id}")
     public Message getMessageById(@PathVariable Long id) {
         return messageService.getMessageById(id);
     }
 
-//    // Endpoint do przeniesienia wiadomości do kosza
-//    @PutMapping("/{id}/move-to-trash")
-//    public ResponseEntity<?> moveMessageToTrash(@PathVariable Long id) {
-//        boolean updated = messageService.moveToTrash(id);
-//        if (updated) {
-//            return ResponseEntity.ok().build();
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @PutMapping("/{id}/delete")
+    public ResponseEntity<?> deleteMessage(
+            @PathVariable Long id,
+            @RequestParam String userType // "sender" albo "recipient"
+    ) {
+        try {
+            messageService.markMessageAsDeleted(id, userType);
+            // Jeśli wszystko pójdzie dobrze, zwracamy HTTP 200 OK bez treści
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            // Jeśli podano zły typ użytkownika (userType), zwracamy HTTP 400 Bad Request
+            // i w ciele odpowiedzi wysyłamy wiadomość błędu
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            // Jeśli wiadomość o danym id nie istnieje (np. wyjątek rzucany przez serwis),
+            // zwracamy HTTP 404 Not Found bez treści
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-//    @PutMapping("/api/messages/{id}/trash")
-//    public ResponseEntity<Void> moveToTrash(@PathVariable Long id) {
-//        messageService.moveMessageToTrash(id);
-//        return ResponseEntity.ok().build();
-//    }
+    @PutMapping("/{id}/trash")
+    public ResponseEntity<?> moveToTrash(
+            @PathVariable Long id
+    ){
+        try {
+            messageService.changeDirtoTrash(id);
+            return ResponseEntity.ok().build();
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 }
