@@ -1,7 +1,10 @@
 package com.mail.mailserver.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Message {
@@ -20,6 +23,12 @@ public class Message {
     private boolean recipientDeleted = false;
 
     private String folder = "inbox";
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Attachment> attachments = new ArrayList<>();
+
+
 
 
     private LocalDateTime timestamp;  // czas wysłania
@@ -117,5 +126,12 @@ public class Message {
         this.folder = folder;
     }
 
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+    }
 
 }

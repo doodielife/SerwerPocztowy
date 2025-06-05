@@ -1,9 +1,14 @@
 package com.mail.mailserver.service;
 
+import com.mail.mailserver.model.Attachment;
 import com.mail.mailserver.model.Message;
 import com.mail.mailserver.repository.MessageRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,6 +24,25 @@ public class MessageService {
     // Zapisz nową wiadomość
     public Message sendMessage(Message message) {
         // Możesz tu dodać walidacje, logikę biznesową itp.
+        return messageRepository.save(message);
+    }
+
+    @Transactional
+    public Message sendMessageWithAttachments(String senderEmail, String recipientEmail, String subject, String content, MultipartFile[] attachments) throws IOException {
+        Message message = new Message(senderEmail, recipientEmail, subject, content);
+        message.setTimestamp(LocalDateTime.now());
+
+        if(attachments != null){
+            for(MultipartFile file : attachments){
+                Attachment attachment = new Attachment();
+                attachment.setFilename(file.getOriginalFilename());
+                attachment.setContentType(file.getContentType());
+                attachment.setData(file.getBytes());
+                attachment.setMessage(message);
+
+                message.getAttachments().add(attachment);
+            }
+        }
         return messageRepository.save(message);
     }
 
