@@ -129,3 +129,18 @@
 .send-message-page .logout-button:hover {
   background-color: #c0392b !important;
 }
+
+
+.custom-file-upload {
+  cursor: pointer;
+  width: 130px; /* lub inna wartość */
+  text-align: left;
+  padding: 12px 8px;
+  background-color: #007888;
+  color: white;
+  border-radius: 4px;
+  display: inline-block;
+}
+.custom-file-upload:hover {
+  background-color: #0056b3;
+}
