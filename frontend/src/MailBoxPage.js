@@ -76,19 +76,21 @@ export default function MailboxPage({ onLogout }) {
                 <td colSpan="3">Brak wiadomości.</td>
               </tr>
             ) : (
-              messages.map((msg) => (
-                <tr
-                  key={msg.id}
-                  onClick={() => handleRowClick(msg)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>
-                    {folder === "sent" ? msg.recipientEmail : msg.senderEmail}
-                  </td>
-                  <td>{msg.subject}</td>
-                  <td>{new Date(msg.timestamp).toLocaleString()}</td>
-                </tr>
-              ))
+              messages.map((msg) => {
+                const isUnread = String(msg.read).toLowerCase() === "false";
+                console.log(isUnread);
+                return (
+                  <tr
+                    key={msg.id}
+                    onClick={() => handleRowClick(msg)}
+                    style={{ cursor: "pointer", fontWeight: isUnread ? "bold" : "normal" }}
+                  >
+                    <td>{folder === "sent" ? msg.recipientEmail : msg.senderEmail}</td>
+                    <td>{msg.subject}</td>
+                    <td>{new Date(msg.timestamp).toLocaleString()}</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

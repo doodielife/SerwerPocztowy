@@ -32,6 +32,8 @@ public class MessageController {
             @RequestParam("content") String content,
             @RequestParam(value = "attachments", required = false) MultipartFile[] attachments
     ) {
+        System.out.println("Attachments: " + (attachments != null ? attachments.length : "null"));
+
         try {
             Message savedMessage = messageService.sendMessageWithAttachments(
                     senderEmail, recipientEmail, subject, content, attachments
@@ -62,6 +64,8 @@ public class MessageController {
     @GetMapping("/{id}")
     public Message getMessageById(@PathVariable Long id) {
         Message message = messageService.getMessageById(id);
+        message.setRead(true);
+        messageService.sendMessage(message);
         if (message.getAttachments() != null) {
             message.getAttachments().size(); // wymusza fetch z bazy
         }

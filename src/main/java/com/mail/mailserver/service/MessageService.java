@@ -2,6 +2,7 @@ package com.mail.mailserver.service;
 
 import com.mail.mailserver.model.Attachment;
 import com.mail.mailserver.model.Message;
+import com.mail.mailserver.repository.AttachmentRepository;
 import com.mail.mailserver.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +17,12 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
+
+
     // Wstrzykujemy repozytorium przez konstruktor
     public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
+
     }
 
     // Zapisz nową wiadomość
@@ -32,6 +36,8 @@ public class MessageService {
         Message message = new Message(senderEmail, recipientEmail, subject, content);
         message.setTimestamp(LocalDateTime.now());
 
+        System.out.println("Liczba załączników: " + (attachments == null ? "null" : attachments.length));
+
         if(attachments != null){
             for(MultipartFile file : attachments){
                 Attachment attachment = new Attachment();
@@ -39,11 +45,26 @@ public class MessageService {
                 attachment.setContentType(file.getContentType());
                 attachment.setData(file.getBytes());
                 attachment.setMessage(message);
-
+              //  attachmentRepository.save(attachment);
                 message.getAttachments().add(attachment);
             }
         }
         return messageRepository.save(message);
+
+//        Message message = new Message();
+//        message.setSenderEmail("a@a.pl");
+//        message.setRecipientEmail("b@b.pl");
+//        message.setSubject("test");
+//        message.setContent("with attachment");
+//
+//        Attachment attachment = new Attachment();
+//        attachment.setFilename("test.txt");
+//        attachment.setContentType("text/plain");
+//        attachment.setData("hello".getBytes());
+//        attachment.setMessage(message);
+//        message.getAttachments().add(attachment);
+//
+//        return messageRepository.save(message);
     }
 
     // Pobierz wiadomości dla konkretnego odbiorcy (recipient)

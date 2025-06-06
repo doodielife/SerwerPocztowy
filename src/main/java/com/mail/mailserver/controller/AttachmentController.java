@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/attachments")
 public class AttachmentController {
@@ -18,7 +17,7 @@ public class AttachmentController {
     @Autowired
     private AttachmentService attachmentService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long id) {
         Optional<Attachment> attachmentOpt = attachmentService.getAttachmentById(id);
 

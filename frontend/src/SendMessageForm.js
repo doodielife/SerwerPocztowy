@@ -91,11 +91,15 @@ export default function SendMessageForm({ onLogout }) {
       formData.append("recipientEmail", recipient); // zamiast "recipient"
       formData.append("subject", subject);
       formData.append("content", body);             // zamiast "body"
-      attachments.forEach((file) => {
+      attachments.forEach(({file}) => {
         formData.append("attachments", file);       // OK, jeśli obsługujesz pliki po stronie backendu
       });
 
       try {
+        console.log("Załączniki:");
+        attachments.forEach(({file}) => {
+          console.log(`Nazwa: ${file.name}, Typ: ${file.type}, Rozmiar: ${file.size}`);
+        });
         const response = await fetch("http://localhost:8081/api/messages/send", {
           method: "POST",
           body: formData,
