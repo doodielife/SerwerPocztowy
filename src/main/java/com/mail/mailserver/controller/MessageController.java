@@ -5,6 +5,7 @@ import com.mail.mailserver.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -18,9 +19,29 @@ public class MessageController {
     private MessageService messageService;
 
     // Endpoint do wysyłania wiadomości
+//    @PostMapping("/send")
+//    public Message sendMessage(@RequestBody Message message) {
+//        return messageService.sendMessage(message);
+//    }
+
     @PostMapping("/send")
-    public Message sendMessage(@RequestBody Message message) {
-        return messageService.sendMessage(message);
+    public ResponseEntity<?> sendMessageWithAttachments(
+            @RequestParam("senderEmail") String senderEmail,
+            @RequestParam("recipientEmail") String recipientEmail,
+            @RequestParam("subject") String subject,
+            @RequestParam("content") String content,
+            @RequestParam(value = "attachments", required = false) MultipartFile[] attachments
+    ) {
+        System.out.println("Attachments: " + (attachments != null ? attachments.length : "null"));
+
+        try {
+            Message savedMessage = messageService.sendMessageWithAttachments(
+                    senderEmail, recipientEmail, subject, content, attachments
+            );
+            return ResponseEntity.ok(savedMessage);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Błąd podczas wysyłania wiadomości: " + e.getMessage());
+        }
     }
 
     // Pobranie wiadomości dla odbiorcy
@@ -42,7 +63,13 @@ public class MessageController {
 
     @GetMapping("/{id}")
     public Message getMessageById(@PathVariable Long id) {
-        return messageService.getMessageById(id);
+        Message message = messageService.getMessageById(id);
+        message.setRead(true);
+        messageService.sendMessage(message);
+        if (message.getAttachments() != null) {
+            message.getAttachments().size(); // wymusza fetch z bazy
+        }
+        return message;
     }
 
     @PutMapping("/{id}/delete")

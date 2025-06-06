@@ -1,5 +1,6 @@
 package com.mail.mailserver.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,17 +12,22 @@ public class Attachment {
 
     private String filename;
 
+    private String contentType;
+
     @Lob
     private byte[] data;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id")
+    @JsonBackReference
     private Message message;
 
     public Attachment() {}
 
-    public Attachment(String filename, String filepath, Message message) {
+    public Attachment(String filename, String contentType, byte[] data, Message message) {
         this.filename = filename;
+        this.contentType = contentType;
+        this.data = data;
         this.message = message;
     }
 
@@ -38,4 +44,7 @@ public class Attachment {
 
     public byte[] getData(){return data;}
     public void setData(byte[] data){this.data = data;}
+
+    public String getContentType(){return contentType;}
+    public void setContentType(String contentType){this.contentType = contentType;}
 }

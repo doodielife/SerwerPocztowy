@@ -46,42 +46,76 @@ export default function SendMessageForm({ onLogout }) {
     };
   }, [attachments]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const senderEmail = localStorage.getItem("email");
+//  const handleSubmit = async (e) => {
+//    e.preventDefault();
+//    const senderEmail = localStorage.getItem("email");
+//
+//    try {
+//      const response = await fetch("http://localhost:8081/api/messages/send", {
+//        method: "POST",
+//        headers: {
+//          "Content-Type": "application/json",
+//        },
+//        body: JSON.stringify({
+//          senderEmail,
+//          recipientEmail: recipient,
+//          subject,
+//          content: body,
+//          // Tutaj możesz dodać logikę wysyłania plików jeśli backend to obsługuje
+//        }),
+//      });
+//
+//      if (!response.ok) {
+//        throw new Error("Nie udało się wysłać wiadomości");
+//      }
+//
+//      await response.json();
+//      setMessage("✅ Wiadomość została wysłana!");
+//      setRecipient("");
+//      setSubject("");
+//      setBody("");
+//      // Czyszczenie załączników po wysłaniu
+//      attachments.forEach(({ url }) => URL.revokeObjectURL(url));
+//      setAttachments([]);
+//    } catch (error) {
+//      console.error("Błąd wysyłania:", error);
+//      setMessage("❌ Wystąpił błąd podczas wysyłania.");
+//    }
+//  };
 
-    try {
-      const response = await fetch("http://localhost:8081/api/messages/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          senderEmail,
-          recipientEmail: recipient,
-          subject,
-          content: body,
-          // Tutaj możesz dodać logikę wysyłania plików jeśli backend to obsługuje
-        }),
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append("senderEmail", localStorage.getItem("email"));
+      formData.append("recipientEmail", recipient); // zamiast "recipient"
+      formData.append("subject", subject);
+      formData.append("content", body);             // zamiast "body"
+      attachments.forEach(({file}) => {
+        formData.append("attachments", file);       // OK, jeśli obsługujesz pliki po stronie backendu
       });
 
-      if (!response.ok) {
-        throw new Error("Nie udało się wysłać wiadomości");
-      }
+      try {
+        console.log("Załączniki:");
+        attachments.forEach(({file}) => {
+          console.log(`Nazwa: ${file.name}, Typ: ${file.type}, Rozmiar: ${file.size}`);
+        });
+        const response = await fetch("http://localhost:8081/api/messages/send", {
+          method: "POST",
+          body: formData,
+        });
 
-      await response.json();
-      setMessage("✅ Wiadomość została wysłana!");
-      setRecipient("");
-      setSubject("");
-      setBody("");
-      // Czyszczenie załączników po wysłaniu
-      attachments.forEach(({ url }) => URL.revokeObjectURL(url));
-      setAttachments([]);
-    } catch (error) {
-      console.error("Błąd wysyłania:", error);
-      setMessage("❌ Wystąpił błąd podczas wysyłania.");
-    }
-  };
+        const result = await response.json();
+        if (response.ok) {
+          setMessage("✅ Wiadomość została wysłana!");
+          setAttachments([]);
+        } else {
+          setMessage(`Błąd: ${result.error || " ❌ Nie udało się wysłać wiadomości."}`);
+        }
+      } catch (err) {
+        setMessage(`Błąd: ${err.message}`);
+      }
+    };
 
   return (
     <div className="send-message-page">
