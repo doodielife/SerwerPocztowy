@@ -5,6 +5,7 @@ import "./MailBoxPage.css";
 export default function MailboxPage({ onLogout }) {
   const [messages, setMessages] = useState([]);
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
   const userEmail = localStorage.getItem("email");
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,6 +85,12 @@ export default function MailboxPage({ onLogout }) {
     }
   };
 
+  const filteredMessages = messages.filter((msg) =>
+    msg.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    msg.senderEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    msg.recipientEmail.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="mailbox-container">
       <div className="sidebar">
@@ -117,28 +124,92 @@ export default function MailboxPage({ onLogout }) {
             : "Kosz"}
         </h2>
 
-        {messages.length > 0 && (
-          <div className="bulk-action-bar">
-            <label>
-              <input
-                type="checkbox"
-                checked={allSelected}
-                onChange={toggleSelectAll}
-              />
-              <span style={{ marginLeft: "8px" }}>Zaznacz wszystkie</span>
-            </label>
+          {messages.length > 0 && (
+            <div
+              className="bulk-action-bar"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    userSelect: "none",
+                    fontWeight: 600,
+                    color: "#007bff",
+                    transition: "color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#0056b3")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#007bff")}
+                >
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={toggleSelectAll}
+                    style={{
+                      cursor: "pointer",
+                      marginRight: "12px",
+                      width: "18px",
+                      height: "18px",
+                      accentColor: "#007bff", // nowoczesny niebieski checkbox (wspierany w nowych przeglądarkach)
+                    }}
+                  />
+                  Zaznacz wszystkie
+                </label>
+              </div>
 
-            {selectedIds.size > 0 && (
-              <button
-                className="delete-button"
-                onClick={handleMoveToTrash}
-                style={{ marginLeft: "20px" }}
-              >
-                {folder === "inbox" ? "Przenieś do kosza" : "Usuń"}
-              </button>
-            )}
-          </div>
-        )}
+              <div style={{ minWidth: "140px", textAlign: "right" }}>
+                <button
+                  className="delete-button"
+                  onClick={handleMoveToTrash}
+                  style={{
+                    opacity: selectedIds.size > 0 ? 1 : 0,
+                    pointerEvents: selectedIds.size > 0 ? "auto" : "none",
+                    marginLeft: "20px",
+                    padding: "8px 16px",
+                    borderRadius: "6px",
+                    border: "none",
+                    backgroundColor: selectedIds.size > 0 ? "#dc3545" : "transparent",
+                    color: selectedIds.size > 0 ? "#fff" : "transparent",
+                    transition: "opacity 0.3s ease",
+                    cursor: selectedIds.size > 0 ? "pointer" : "default",
+                  }}
+                >
+                  {folder === "inbox" ? "Przenieś do kosza" : "Usuń"}
+                </button>
+              </div>
+
+             <input
+               type="text"
+               placeholder="Szukaj wiadomości..."
+               value={searchQuery}
+               onChange={(e) => setSearchQuery(e.target.value)}
+               style={{
+                 padding: "10px 20px",
+                 borderRadius: "20px",
+                 border: "1px solid #007bff", // niebieska ramka na start
+                 boxShadow: "0 1px 4px rgba(0, 123, 255, 0.3)", // delikatny niebieski cień
+                 outline: "none",
+                 transition: "border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+               }}
+               onFocus={(e) => {
+                 e.target.style.borderColor = "#0056b3"; // ciemniejszy niebieski na focus
+                 e.target.style.boxShadow = "0 0 8px rgba(0, 86, 179, 0.6)"; // mocniejszy cień niebieski
+               }}
+               onBlur={(e) => {
+                 e.target.style.borderColor = "#007bff"; // powrót do jasnoniebieskiego
+                 e.target.style.boxShadow = "0 1px 4px rgba(0, 123, 255, 0.3)"; // delikatny cień
+               }}
+             />
+            </div>
+          )}
+
 
         <table>
           <thead>
@@ -155,7 +226,7 @@ export default function MailboxPage({ onLogout }) {
                 <td colSpan="4">Brak wiadomości.</td>
               </tr>
             ) : (
-              messages.map((msg) => {
+              filteredMessages.map((msg) => {
                 const isUnread = String(msg.read).toLowerCase() === "false";
                 return (
                   <tr
@@ -167,7 +238,7 @@ export default function MailboxPage({ onLogout }) {
                     }}
                     style={{
                       cursor: "pointer",
-                      fontWeight: isUnread ? "bold" : "normal",
+                      fontWeight: folder === "sent" ? "normal" : isUnread ? "bold" : "normal",
                     }}
                   >
                     <td onClick={(e) => e.stopPropagation()}>
