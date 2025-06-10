@@ -1,6 +1,7 @@
 package com.mail.mailserver.controller;
 
 import com.mail.mailserver.model.Message;
+import com.mail.mailserver.service.AESUtil;
 import com.mail.mailserver.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -61,16 +62,33 @@ public class MessageController {
         return messageService.getMessagesFromTrash(recipientEmail);
     }
 
+//    @GetMapping("/{id}")
+//    public Message getMessageById(@PathVariable Long id) {
+//        Message message = messageService.getMessageById(id);
+//        message.setRead(true);
+//        messageService.sendMessage(message);
+//        if (message.getAttachments() != null) {
+//            message.getAttachments().size(); // wymusza fetch z bazy
+//        }
+//        return message;
+//    }
+
     @GetMapping("/{id}")
     public Message getMessageById(@PathVariable Long id) {
         Message message = messageService.getMessageById(id);
         message.setRead(true);
         messageService.sendMessage(message);
+
+        // Odszyfrowanie treści przed zwróceniem do klienta
+        String decryptedContent = AESUtil.decrypt(message.getContent());
+        message.setContent(decryptedContent);
+
         if (message.getAttachments() != null) {
             message.getAttachments().size(); // wymusza fetch z bazy
         }
         return message;
     }
+
 
     @PutMapping("/{id}/delete")
     public ResponseEntity<?> deleteMessage(

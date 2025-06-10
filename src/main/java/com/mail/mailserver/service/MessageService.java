@@ -31,12 +31,34 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    @Transactional
-    public Message sendMessageWithAttachments(String senderEmail, String recipientEmail, String subject, String content, MultipartFile[] attachments) throws IOException {
-        Message message = new Message(senderEmail, recipientEmail, subject, content);
-        message.setTimestamp(LocalDateTime.now());
+//    @Transactional
+//    public Message sendMessageWithAttachments(String senderEmail, String recipientEmail, String subject, String content, MultipartFile[] attachments) throws IOException {
+//        Message message = new Message(senderEmail, recipientEmail, subject, content);
+//        message.setTimestamp(LocalDateTime.now());
+//
+//        System.out.println("Liczba załączników: " + (attachments == null ? "null" : attachments.length));
+//
+//        if(attachments != null){
+//            for(MultipartFile file : attachments){
+//                Attachment attachment = new Attachment();
+//                attachment.setFilename(file.getOriginalFilename());
+//                attachment.setContentType(file.getContentType());
+//                attachment.setData(file.getBytes());
+//                attachment.setMessage(message);
+//              //  attachmentRepository.save(attachment);
+//                message.getAttachments().add(attachment);
+//            }
+//        }
+//        return messageRepository.save(message);
+//
+//    }
 
-        System.out.println("Liczba załączników: " + (attachments == null ? "null" : attachments.length));
+    public Message sendMessageWithAttachments(String senderEmail, String recipientEmail, String subject, String content, MultipartFile[] attachments) throws IOException {
+        // Szyfrujemy treść
+        String encryptedContent = AESUtil.encrypt(content);
+
+        Message message = new Message(senderEmail, recipientEmail, subject, encryptedContent);
+        message.setTimestamp(LocalDateTime.now());
 
         if(attachments != null){
             for(MultipartFile file : attachments){
@@ -45,27 +67,12 @@ public class MessageService {
                 attachment.setContentType(file.getContentType());
                 attachment.setData(file.getBytes());
                 attachment.setMessage(message);
-              //  attachmentRepository.save(attachment);
                 message.getAttachments().add(attachment);
             }
         }
         return messageRepository.save(message);
-
-//        Message message = new Message();
-//        message.setSenderEmail("a@a.pl");
-//        message.setRecipientEmail("b@b.pl");
-//        message.setSubject("test");
-//        message.setContent("with attachment");
-//
-//        Attachment attachment = new Attachment();
-//        attachment.setFilename("test.txt");
-//        attachment.setContentType("text/plain");
-//        attachment.setData("hello".getBytes());
-//        attachment.setMessage(message);
-//        message.getAttachments().add(attachment);
-//
-//        return messageRepository.save(message);
     }
+
 
     // Pobierz wiadomości dla konkretnego odbiorcy (recipient)
     public List<Message> getMessagesForRecipient(String recipientEmail) {
