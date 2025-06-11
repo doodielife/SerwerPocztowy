@@ -4,6 +4,8 @@ import com.mail.mailserver.model.Attachment;
 import com.mail.mailserver.model.Message;
 import com.mail.mailserver.repository.AttachmentRepository;
 import com.mail.mailserver.repository.MessageRepository;
+import com.mail.mailserver.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,9 @@ import java.util.List;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
 
@@ -31,47 +36,30 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-//    @Transactional
-//    public Message sendMessageWithAttachments(String senderEmail, String recipientEmail, String subject, String content, MultipartFile[] attachments) throws IOException {
-//        Message message = new Message(senderEmail, recipientEmail, subject, content);
-//        message.setTimestamp(LocalDateTime.now());
-//
-//        System.out.println("Liczba załączników: " + (attachments == null ? "null" : attachments.length));
-//
-//        if(attachments != null){
-//            for(MultipartFile file : attachments){
-//                Attachment attachment = new Attachment();
-//                attachment.setFilename(file.getOriginalFilename());
-//                attachment.setContentType(file.getContentType());
-//                attachment.setData(file.getBytes());
-//                attachment.setMessage(message);
-//              //  attachmentRepository.save(attachment);
-//                message.getAttachments().add(attachment);
-//            }
-//        }
-//        return messageRepository.save(message);
-//
-//    }
 
     public Message sendMessageWithAttachments(String senderEmail, String recipientEmail, String subject, String content, MultipartFile[] attachments) throws IOException {
-        // Szyfrujemy treść
-        String encryptedContent = AESUtil.encrypt(content);
 
-        Message message = new Message(senderEmail, recipientEmail, subject, encryptedContent);
-        message.setTimestamp(LocalDateTime.now());
-
-        if(attachments != null){
-            for(MultipartFile file : attachments){
-                Attachment attachment = new Attachment();
-                attachment.setFilename(file.getOriginalFilename());
-                attachment.setContentType(file.getContentType());
-                attachment.setData(file.getBytes());
-                attachment.setMessage(message);
-                message.getAttachments().add(attachment);
-            }
+        if (!userRepository.existsByEmail(recipientEmail)) {
+            return null;
         }
-        return messageRepository.save(message);
-    }
+
+            String encryptedContent = AESUtil.encrypt(content);
+
+            Message message = new Message(senderEmail, recipientEmail, subject, encryptedContent);
+            message.setTimestamp(LocalDateTime.now());
+
+            if (attachments != null) {
+                for (MultipartFile file : attachments) {
+                    Attachment attachment = new Attachment();
+                    attachment.setFilename(file.getOriginalFilename());
+                    attachment.setContentType(file.getContentType());
+                    attachment.setData(file.getBytes());
+                    attachment.setMessage(message);
+                    message.getAttachments().add(attachment);
+                }
+            }
+            return messageRepository.save(message);
+        }
 
 
     // Pobierz wiadomości dla konkretnego odbiorcy (recipient)
