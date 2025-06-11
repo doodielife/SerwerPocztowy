@@ -46,42 +46,6 @@ export default function SendMessageForm({ onLogout }) {
     };
   }, [attachments]);
 
-//  const handleSubmit = async (e) => {
-//    e.preventDefault();
-//    const senderEmail = localStorage.getItem("email");
-//
-//    try {
-//      const response = await fetch("http://localhost:8081/api/messages/send", {
-//        method: "POST",
-//        headers: {
-//          "Content-Type": "application/json",
-//        },
-//        body: JSON.stringify({
-//          senderEmail,
-//          recipientEmail: recipient,
-//          subject,
-//          content: body,
-//          // Tutaj możesz dodać logikę wysyłania plików jeśli backend to obsługuje
-//        }),
-//      });
-//
-//      if (!response.ok) {
-//        throw new Error("Nie udało się wysłać wiadomości");
-//      }
-//
-//      await response.json();
-//      setMessage("✅ Wiadomość została wysłana!");
-//      setRecipient("");
-//      setSubject("");
-//      setBody("");
-//      // Czyszczenie załączników po wysłaniu
-//      attachments.forEach(({ url }) => URL.revokeObjectURL(url));
-//      setAttachments([]);
-//    } catch (error) {
-//      console.error("Błąd wysyłania:", error);
-//      setMessage("❌ Wystąpił błąd podczas wysyłania.");
-//    }
-//  };
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -109,7 +73,11 @@ export default function SendMessageForm({ onLogout }) {
         if (response.ok) {
           setMessage("✅ Wiadomość została wysłana!");
           setAttachments([]);
-        } else {
+          setRecipient("");   // <--- czyści pole odbiorcy
+          setSubject("");     // <--- czyści pole tematu
+          setBody("");        // <--- czyści treść
+        }
+         else {
           setMessage(`Błąd: ${result.error || " ❌ Nie udało się wysłać wiadomości."}`);
         }
       } catch (err) {

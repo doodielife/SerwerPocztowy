@@ -3,6 +3,7 @@ package com.mail.mailserver.controller;
 import com.mail.mailserver.model.Message;
 import com.mail.mailserver.service.AESUtil;
 import com.mail.mailserver.service.MessageService;
+import org.springframework.aop.support.AbstractExpressionPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -19,11 +21,6 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    // Endpoint do wysyłania wiadomości
-//    @PostMapping("/send")
-//    public Message sendMessage(@RequestBody Message message) {
-//        return messageService.sendMessage(message);
-//    }
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessageWithAttachments(
@@ -39,9 +36,15 @@ public class MessageController {
             Message savedMessage = messageService.sendMessageWithAttachments(
                     senderEmail, recipientEmail, subject, content, attachments
             );
+
+            if(savedMessage == null){
+                return ResponseEntity.badRequest().body(Map.of("error", "Nie znaleziono odbiorcy o tym adresie!"));
+            }
+
             return ResponseEntity.ok(savedMessage);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Błąd podczas wysyłania wiadomości: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -62,16 +65,6 @@ public class MessageController {
         return messageService.getMessagesFromTrash(recipientEmail);
     }
 
-//    @GetMapping("/{id}")
-//    public Message getMessageById(@PathVariable Long id) {
-//        Message message = messageService.getMessageById(id);
-//        message.setRead(true);
-//        messageService.sendMessage(message);
-//        if (message.getAttachments() != null) {
-//            message.getAttachments().size(); // wymusza fetch z bazy
-//        }
-//        return message;
-//    }
 
     @GetMapping("/{id}")
     public Message getMessageById(@PathVariable Long id) {
