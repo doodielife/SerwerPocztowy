@@ -52,11 +52,11 @@ export default function SendMessageForm({ onLogout }) {
 
       const formData = new FormData();
       formData.append("senderEmail", localStorage.getItem("email"));
-      formData.append("recipientEmail", recipient); // zamiast "recipient"
+      formData.append("recipientEmail", recipient);
       formData.append("subject", subject);
-      formData.append("content", body);             // zamiast "body"
+      formData.append("content", body);
       attachments.forEach(({file}) => {
-        formData.append("attachments", file);       // OK, jeśli obsługujesz pliki po stronie backendu
+        formData.append("attachments", file);
       });
 
       try {
