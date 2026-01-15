@@ -77,7 +77,7 @@ public class MessageController {
         message.setContent(decryptedContent);
 
         if (message.getAttachments() != null) {
-            message.getAttachments().size(); // wymusza fetch z bazy
+            message.getAttachments().size();
         }
         return message;
     }
